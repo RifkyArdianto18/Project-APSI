@@ -39,14 +39,16 @@ class Booking extends CI_Controller {
     {
         $data = [
             'id_pelanggan' => $this->input->post('id_pelanggan'),
+            'id_pengguna' => $this->session->userdata('id_pengguna'),
             'id_mobil' => $this->input->post('id_mobil'),
-            'tanggal_booking' => date('Y-m-d'),
-            'booking_fee' => 500000,
-            'status_booking' => 'aktif'
+            'tgl_booking' => date('Y-m-d'),
+            'batas_dp' => date('Y-m-d', strtotime('+7 days')),
+            'status' => 'booking'
         ];
 
         $this->M_booking->insert($data);
 
+        // update status mobil
         $this->db->where('id_mobil', $this->input->post('id_mobil'));
         $this->db->update('mobil', ['status_mobil' => 'booking']);
 

@@ -19,9 +19,11 @@
         <td><?= $no++ ?></td>
         <td><?= $b->nama_pelanggan ?></td>
         <td><?= $b->nama_mobil ?></td>
-        <td><?= $b->tanggal_booking ?></td>
-        <td><?= number_format($b->booking_fee) ?></td>
-        <td><?= $b->status_booking ?></td>
+        <td><?= date('d-m-Y', strtotime($b->tgl_booking)) ?></td>
+        <td>
+            <?= $b->dp ? number_format($b->dp) : '-' ?>
+        </td>
+        <td><?= ucfirst($b->status) ?></td>
     </tr>
     <?php endforeach; ?>
 </table>
