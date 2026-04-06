@@ -17,11 +17,36 @@ class Dashboard extends CI_Controller {
 
     public function index()
     {
-        $data['total_mobil'] = $this->M_dashboard->total_mobil();
-        $data['total_pelanggan'] = $this->M_dashboard->total_pelanggan();
-        $data['total_booking'] = $this->M_dashboard->total_booking();
-        $data['total_penjualan'] = $this->M_dashboard->total_penjualan();
+        // statistik
+        $data['total_mobil'] = $this->db->count_all('mobil');
+        $data['total_pelanggan'] = $this->db->count_all('pelanggan');
+        $data['total_booking'] = $this->db->count_all('booking');
+        $data['total_penjualan'] = $this->db->count_all('penjualan');
 
+        // tambahan
+        $data['booking_aktif'] = $this->db
+            ->where('status','booking')
+            ->count_all_results('booking');
+
+        $data['mobil_tersedia'] = $this->db
+            ->where('status_mobil','tersedia')
+            ->count_all_results('mobil');
+
+        $bulan = [];
+        $jumlah = [];
+
+        for ($i=1; $i<=12; $i++) {
+
+            $bulan[] = date('M', mktime(0,0,0,$i,1));
+
+            $this->db->where('MONTH(tanggal_lunas)', $i);
+            $jumlah[] = $this->db->count_all_results('penjualan');
+        }
+
+        $data['bulan'] = $bulan;
+        $data['jumlah_penjualan'] = $jumlah;
+
+        // load view
         $this->load->view('templates/header');
         $this->load->view('templates/sidebar');
         $this->load->view('dashboard', $data);

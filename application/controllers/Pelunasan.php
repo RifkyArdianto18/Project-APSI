@@ -26,15 +26,45 @@ class Pelunasan extends CI_Controller {
 
     public function bayar($id_penjualan)
     {
-        $penjualan = $this->db->get_where('penjualan', ['id_penjualan' => $id_penjualan])->row();
+        // ambil data penjualan + DP
+        $penjualan = $this->db
+            ->select('penjualan.*, booking.id_booking, mobil.harga_jual')
+            ->join('booking', 'booking.id_booking = penjualan.id_booking')
+            ->join('mobil', 'mobil.id_mobil = booking.id_mobil')
+            ->where('id_penjualan', $id_penjualan)
+            ->get('penjualan')
+            ->row();
 
+        // ambil total DP
+        $dp = $this->db
+            ->select_sum('jumlah')
+            ->where('id_booking', $penjualan->id_booking)
+            ->where('jenis_pembayaran', 'dp')
+            ->get('pembayaran')
+            ->row()->jumlah;
+
+        $sisa = $penjualan->total_harga - $dp;
+
+        // CEK SUDAH LUNAS BELUM
+        $cek = $this->db
+            ->where('id_penjualan', $id_penjualan)
+            ->where('jenis_pembayaran', 'pelunasan')
+            ->get('pembayaran')
+            ->row();
+
+        if ($cek) {
+            $this->session->set_flashdata('error', 'Sudah dilakukan pelunasan!');
+            redirect('pelunasan');
+        }
+
+        // simpan
         $data = [
             'id_penjualan' => $id_penjualan,
             'jenis_pembayaran' => 'pelunasan',
             'tgl_bayar' => date('Y-m-d'),
-            'jumlah' => $penjualan->total_harga,
+            'jumlah' => $sisa,
             'metode' => 'transfer',
-            'status_konfirmasi' => 'lunas',
+            'status_konfirmasi' => 'diterima',
             'bukti_transfer' => ''
         ];
 
@@ -43,8 +73,11 @@ class Pelunasan extends CI_Controller {
         $this->db->where('id_penjualan', $id_penjualan);
         $this->db->update('penjualan', [
             'tanggal_lunas' => date('Y-m-d'),
-            'status_penyerahan' => 'siap kirim'
+            'status_penyerahan' => 'siap'
         ]);
+
+        $this->db->where('id_mobil', $penjualan->id_mobil);
+        $this->db->update('mobil', ['status_mobil' => 'terjual']);
 
         redirect('pelunasan');
     }

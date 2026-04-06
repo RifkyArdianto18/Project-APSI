@@ -16,6 +16,9 @@ class Booking extends CI_Controller {
 
     public function index()
     {
+        // AUTO UPDATE EXPIRED
+        $this->M_booking->update_expired();
+
         $data['booking'] = $this->M_booking->get_all();
 
         $this->load->view('templates/header');
@@ -37,10 +40,19 @@ class Booking extends CI_Controller {
 
     public function simpan()
     {
+        $id_mobil = $this->input->post('id_mobil');
+
+        $mobil = $this->db->get_where('mobil', ['id_mobil' => $id_mobil])->row();
+
+        if ($mobil->status_mobil != 'tersedia') {
+            $this->session->set_flashdata('error', 'Mobil sudah dibooking!');
+            redirect('booking');
+        }
+
         $data = [
             'id_pelanggan' => $this->input->post('id_pelanggan'),
             'id_pengguna' => $this->session->userdata('id_pengguna'),
-            'id_mobil' => $this->input->post('id_mobil'),
+            'id_mobil' => $id_mobil,
             'tgl_booking' => date('Y-m-d'),
             'batas_dp' => date('Y-m-d', strtotime('+7 days')),
             'status' => 'booking'
@@ -48,8 +60,19 @@ class Booking extends CI_Controller {
 
         $this->M_booking->insert($data);
 
+        $id_booking = $this->db->insert_id();
+
+        $this->db->insert('pembayaran', [
+            'id_booking' => $id_booking,
+            'jenis_pembayaran' => 'booking',
+            'tgl_bayar' => date('Y-m-d'),
+            'jumlah' => 500000,
+            'metode' => 'cash',
+            'status_konfirmasi' => 'diterima'
+        ]);
+
         // update status mobil
-        $this->db->where('id_mobil', $this->input->post('id_mobil'));
+        $this->db->where('id_mobil', $id_mobil);
         $this->db->update('mobil', ['status_mobil' => 'booking']);
 
         redirect('booking');

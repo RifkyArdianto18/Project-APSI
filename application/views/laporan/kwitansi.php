@@ -2,50 +2,81 @@
 <html>
 <head>
     <title>Kwitansi</title>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             width: 700px;
             margin: auto;
             color: #000;
         }
+
+        .box {
+            border: 2px solid #000;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
         .header {
             text-align: center;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 10px;
+
+        .logo img {
+            width: 70px;
         }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         .line {
-            border-top: 2px solid black;
+            border-top: 2px dashed black;
             margin: 10px 0;
         }
+
         table {
             width: 100%;
-            margin-top: 5px;
         }
+
         td {
-            padding: 4px;
+            padding: 5px;
         }
+
         .right {
             text-align: right;
         }
+
         .bold {
             font-weight: bold;
         }
+
+        .highlight {
+            font-size: 18px;
+            font-weight: bold;
+            background: #f4f6f9;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .ttd {
+            margin-top: 40px;
+            text-align: right;
+        }
     </style>
 </head>
+
 <body onload="window.print()">
 
-    <!-- LOGO -->
-    <div class="logo">
-        <img src="<?= base_url('assets/logo.png') ?>" width="80">
-    </div>
+<div class="box">
 
     <!-- HEADER -->
     <div class="header">
-        <h2>NUSA AUTO</h2>
-        <h3>KWITANSI PEMBAYARAN</h3>
+        <div class="logo">
+            <img src="<?= base_url('assets/logo.png') ?>">
+        </div>
+        <div class="title">NUSA AUTO</div>
+        <div>KWITANSI PEMBAYARAN</div>
     </div>
 
     <div class="line"></div>
@@ -54,7 +85,7 @@
     <table>
         <tr>
             <td>No</td>
-            <td>: KW-<?= str_pad($d->id_pembayaran, 3, '0', STR_PAD_LEFT) ?></td>
+            <td>: KW-<?= str_pad($d->id_pembayaran, 4, '0', STR_PAD_LEFT) ?></td>
         </tr>
         <tr>
             <td>Tanggal</td>
@@ -67,7 +98,7 @@
     <!-- DATA -->
     <table>
         <tr>
-            <td>Pelanggan</td>
+            <td width="30%">Pelanggan</td>
             <td>: <?= $d->nama_pelanggan ?></td>
         </tr>
         <tr>
@@ -82,11 +113,11 @@
 
     <div class="line"></div>
 
-    <!-- PEMBAYARAN -->
+    <!-- JUMLAH -->
     <table>
         <tr>
-            <td class="bold">Jumlah</td>
-            <td class="right bold">
+            <td class="bold">Jumlah Dibayar</td>
+            <td class="right highlight">
                 Rp <?= number_format($d->jumlah, 0, ',', '.') ?>
             </td>
         </tr>
@@ -98,14 +129,14 @@
 
     <div class="line"></div>
 
-    <br><br>
-
     <!-- TTD -->
-    <div class="right">
+    <div class="ttd">
         <p>Admin</p>
-        <br><br><br>
-        <p>_____________________</p>
+        <br><br>
+        <p><b>_____________________</b></p>
     </div>
+
+</div>
 
 </body>
 </html>

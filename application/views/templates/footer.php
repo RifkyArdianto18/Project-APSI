@@ -3,7 +3,7 @@
 </div>
 
 <footer class="main-footer text-center">
-    <strong>Nusa Auto 2026</strong>
+    <strong>© <?= date('Y') ?> Nusa Auto</strong>
 </footer>
 
 </div>
@@ -17,5 +17,31 @@
 <!-- AdminLTE -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
+<!-- 🔥 CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+var ctx = document.getElementById('chartPenjualan');
+
+if(ctx){
+
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($bulan) ?>,
+            datasets: [{
+                label: 'Penjualan',
+                data: <?= json_encode($jumlah_penjualan) ?>,
+                fill: false,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+}
+</script>
 </body>
 </html>

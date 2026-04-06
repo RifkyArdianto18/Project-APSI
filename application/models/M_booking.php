@@ -27,4 +27,11 @@ class M_booking extends CI_Model {
     {
         return $this->db->insert('booking', $data);
     }
+
+    public function update_expired()
+    {
+        $this->db->where('batas_dp <', date('Y-m-d'));
+        $this->db->where('status', 'booking');
+        $this->db->update('booking', ['status' => 'expired']);
+    }
 }
